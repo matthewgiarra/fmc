@@ -20,6 +20,7 @@ function ZI = sincBlackmanInterp2(Z, XI, YI, KERNELSIZE, METHOD)
 %   sinc
 % 
 
+
 % Default to blackman interpolation
 if nargin < 5
     METHOD = 'blackman';

@@ -7,7 +7,7 @@ DefaultJob.CaseName = 'lambvortex_2014-05-22_centralDifference';
 DefaultJob.DataRepository = 'analysis/data';
 % DefaultJob.DataRepository = '~/Desktop/images';
 
-
+% This was changed in a clone!
 
 
 % Job options

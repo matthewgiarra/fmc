@@ -3,9 +3,6 @@ function runFmcFullFieldJobList(JOBLIST)
 % Add compiled code path
 addpath ba_interpolation;
 
-% Determine the local path to the project repository
-projectRepository = determineLocalRepositoryPath;
-
 % Determine the number of jobs in the job list.
 nJobs = length(JOBLIST);
 
@@ -71,6 +68,9 @@ for n = 1 : nJobs
     if dataRepositoryIsAbsolute
         imageDirectory = dataRepository;
     else
+        % Determine the local path to the project repository
+        projectRepository = determineLocalRepositoryPath;
+
         if isSynthetic
             % Synthetic images, where the particle concentration is specified.
             imageDirectory = fullfile(projectRepository, dataRepository, imageType, setType, caseName, ['c_' num2str(particleConcentration, '%0.4f')], [imageBaseName num2str(currentSet, '%05.0f')], 'raw');

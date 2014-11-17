@@ -4,15 +4,12 @@ function JOBLIST = fmcJobList_fullField()
 DefaultJob.ImageType = 'synthetic';
 DefaultJob.SetType = 'vortex';
 DefaultJob.CaseName = 'lambvortex_2014-05-22_centralDifference';
-DefaultJob.DataRepository = 'analysis/data';
-% DefaultJob.DataRepository = '~/Desktop/images';
-
-% This was changed in a clone!
-
+% DefaultJob.DataRepository = 'analysis/data';
+DefaultJob.DataRepository = '~/Desktop/lambvortex_2014-05-22_centralDifference/c_0.0250/lambvortex_h1024_w1024_00001/raw';
 
 % Job options
 DefaultJob.JobOptions.NumberOfProcessors = 1;
-DefaultJob.JobOptions.DataRepositoryIsAbsolute = 0;
+DefaultJob.JobOptions.DataRepositoryIsAbsolute = 1;
 DefaultJob.JobOptions.ImageRotationAngle = 0;
 DefaultJob.JobOptions.SimulateBeam = 0;
 DefaultJob.JobOptions.SimulateNoise = 0;
@@ -22,6 +19,7 @@ DefaultJob.JobOptions.LeftHanded = 0;
 DefaultJob.JobOptions.ComparisonType = 'Eulerian';
 DefaultJob.JobOptions.StartFromExistingField = 0;
 DefaultJob.JobOptions.StartPass = 1;
+DefaultJob.JobOptions.RunCompiled = 1;
 
 % Image parameters
 DefaultJob.Parameters.Images.BaseName = 'lambvortex_h1024_w1024_';
@@ -96,7 +94,7 @@ defaultProcessing = DefaultJob.Parameters.Processing;
 SegmentItem = DefaultJob;
 SegmentItem.JobOptions.ImageRotationAngle = 0;
 SegmentItem.Parameters.Images.CorrelationStep = 5;
-SegmentItem.JobOptions.NumberOfPasses = 3;
+SegmentItem.JobOptions.NumberOfPasses = 1;
 
 % Pass 1
 SegmentItem.Parameters.Processing(1) = defaultProcessing;
@@ -116,60 +114,18 @@ SegmentItem.Parameters.Processing(1).InterrogationRegion.Width = 128;
 SegmentItem.Parameters.Processing(1).DoDiscreteWindowOffset = 0;
 SegmentItem.Parameters.Processing(1).DwoConverge = 0;
 SegmentItem.Parameters.Processing(1).DwoMaxConvergenceIterations = 1;
-SegmentItem.Parameters.Processing(1).DoImageDeformation = 1;
+SegmentItem.Parameters.Processing(1).DoImageDeformation = 0;
 SegmentItem.Parameters.Processing(1).DoImageDisparity = 0;
-SegmentItem.Parameters.Processing(1).Smoothing.DoSmoothing = 1;
-SegmentItem.Parameters.Processing(1).Correlation.Method = 'fmc_deform';
-
-% Pass 2
-SegmentItem.Parameters.Processing(2) = defaultProcessing;
-SegmentItem.Parameters.Processing(2).DwoDifferenceMethod = 'central';
-SegmentItem.Parameters.Processing(2).FmcDifferenceMethod = 'central';
-SegmentItem.Parameters.Processing(2).InterrogationRegion.FMIWindowSize = [1 1 0];
-SegmentItem.Parameters.Processing(2).InterrogationRegion.FMIWindowType = 'hann1';
-SegmentItem.Parameters.Processing(2).Resampling.NumberOfRings = 64;
-SegmentItem.Parameters.Processing(2).Resampling.NumberOfWedges = 128;
-SegmentItem.Parameters.Processing(2).Resampling.MinimumRadius = 1;
-SegmentItem.Parameters.Processing(2).Grid.Spacing.X = 16;
-SegmentItem.Parameters.Processing(2).Grid.Spacing.Y = 16;
-SegmentItem.Parameters.Processing(2).Grid.Buffer.Y = [32, 32];
-SegmentItem.Parameters.Processing(2).Grid.Buffer.X = [32, 32];
-SegmentItem.Parameters.Processing(2).InterrogationRegion.Height = 64;
-SegmentItem.Parameters.Processing(2).InterrogationRegion.Width = 64;
-SegmentItem.Parameters.Processing(2).DoDiscreteWindowOffset = 0;
-SegmentItem.Parameters.Processing(2).DwoConverge = 0;
-SegmentItem.Parameters.Processing(2).DwoMaxConvergenceIterations = 1;
-SegmentItem.Parameters.Processing(2).DoImageDeformation = 1;
-SegmentItem.Parameters.Processing(2).DoImageDisparity = 0;
-SegmentItem.Parameters.Processing(2).Smoothing.DoSmoothing = 1;
-SegmentItem.Parameters.Processing(2).Correlation.Method = 'fmc_deform';
-
-% Pass 3
-SegmentItem.Parameters.Processing(3) = defaultProcessing;
-SegmentItem.Parameters.Processing(3).DwoDifferenceMethod = 'central';
-SegmentItem.Parameters.Processing(3).FmcDifferenceMethod = 'central';
-SegmentItem.Parameters.Processing(3).InterrogationRegion.FMIWindowSize = [1 1 0];
-SegmentItem.Parameters.Processing(3).InterrogationRegion.FMIWindowType = 'hann1';
-SegmentItem.Parameters.Processing(3).Resampling.NumberOfRings = 64;
-SegmentItem.Parameters.Processing(3).Resampling.NumberOfWedges = 128;
-SegmentItem.Parameters.Processing(3).Resampling.MinimumRadius = 1;
-SegmentItem.Parameters.Processing(3).Grid.Spacing.X = 8;
-SegmentItem.Parameters.Processing(3).Grid.Spacing.Y = 8;
-SegmentItem.Parameters.Processing(3).Grid.Buffer.Y = [32, 32];
-SegmentItem.Parameters.Processing(3).Grid.Buffer.X = [32, 32];
-SegmentItem.Parameters.Processing(3).InterrogationRegion.Height = 32;
-SegmentItem.Parameters.Processing(3).InterrogationRegion.Width = 32;
-SegmentItem.Parameters.Processing(3).DoDiscreteWindowOffset = 0;
-SegmentItem.Parameters.Processing(3).DwoConverge = 0;
-SegmentItem.Parameters.Processing(3).DwoMaxConvergenceIterations = 1;
-SegmentItem.Parameters.Processing(3).DoImageDeformation = 1;
-SegmentItem.Parameters.Processing(3).DoImageDisparity = 0;
-SegmentItem.Parameters.Processing(3).Smoothing.DoSmoothing = 1;
-SegmentItem.Parameters.Processing(3).Correlation.Method = 'fmc_deform';
-
+SegmentItem.Parameters.Processing(1).Smoothing.DoSmoothing = 0;
+SegmentItem.Parameters.Processing(1).Correlation.Method = 'rpc';
 
 % Append segment item.
 JOBLIST(1) = SegmentItem;
+
+SegmentItem.Parameters.Processing(1).Correlation.Method = 'fmc';
+JOBLIST(end + 1) = SegmentItem;
+
+
 
 
 

@@ -6,7 +6,8 @@ function fmcFullField(FILEPATHS, JOBFILE)
 % This can be changed if you want to re-compile the codes
 % on your own platform, i.e. if you figure out
 % how to compile mex files on Mac, etc.
-COMPILED = ~ismac & ~ispc ;
+COMPILED = JOBFILE.JobOptions.RunCompiled;
+
 
 % Number of PIV passes
 % Take the minimum of the requested number of passes and the number of pass

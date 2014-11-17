@@ -18,11 +18,13 @@ for n = 1 : nJobs
     % Number of processors
     dataRepositoryIsAbsolute = JobFile.JobOptions.DataRepositoryIsAbsolute;
     
+    % Read the data repository location.
+    dataRepository = JobFile.DataRepository;
+    
     % Job information
     imageType = JobFile.ImageType; % 'experimental' or 'synthetic';
     setType = JobFile.SetType; % 'vortexring', 'mc', etc.;
     caseName = JobFile.CaseName; % e.g. 'vortexring_2013-11-12_d03_f60_t06'
-    dataRepository = JobFile.DataRepository;
     
     % Image parameters
     imageBaseName = JobFile.Parameters.Images.BaseName;

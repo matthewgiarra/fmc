@@ -178,12 +178,12 @@ imageTest_2 = transformImage(image2, xImage, yImage, matrix_21, COMPILED);
 
 % This is does the RPC correlation between the aligned first and second
 % images that were aligned using the originally-calculated rotation angle.
-[ty1, tx1, spatialCorr, peakHeight1, peakDiameter1] = RPC(spatialWindow .* imageTest_1, spatialWindow .* imageTest_2, spectralFilter);
+[ty1, tx1, spatialCorr, peakHeight1, peakDiameter1] = RPC(spatialWindow .* imageTest_1, spatialWindow .* imageTest_2, spectralFilter, COMPILED);
 
 % This calculates the peak ratio and peak height for the correlation
 % between the "central difference" correlation for the
 % originally-calculated rotation angle.
-[peakRatio1, ~] = measurePeakHeightRatio(spatialCorr);
+[peakRatio1, ~] = measurePeakHeightRatio(spatialCorr, COMPILED);
 
 % Only check for the other angle if the first estimate of the rotation
 % angle is greater than pi/2. Keep the original variable names to save speed
@@ -206,12 +206,12 @@ if abs(angleIn) >= pi / 2
     % This is does the RPC correlation between the forward-transformed first
     % image and the backward-transformed second image, for the originally
     % calculated rotation angle + pi.
-    [ty2, tx2, spatialCorr, peakHeight2, peakDiameter2] = RPC(spatialWindow .* imageTest_1, spatialWindow .* imageTest_2, spectralFilter);
+    [ty2, tx2, spatialCorr, peakHeight2, peakDiameter2] = RPC(spatialWindow .* imageTest_1, spatialWindow .* imageTest_2, spectralFilter, COMPILED);
 
     % This calculates the peak ratio and peak height for the correlation
     % between the "central difference" correlation for the
     % originally-calculated rotation angle + pi.
-    [peakRatio2, ~] = measurePeakHeightRatio(spatialCorr);
+    [peakRatio2, ~] = measurePeakHeightRatio(spatialCorr, COMPILED);
 else
     peakHeight2 = 0;
     peakDiameter2 = 0;

@@ -29,9 +29,8 @@ fmi_correlation_plane = freq2space(spectralRPC, fmi_height, fmi_width);
 % This is eqivalent to but faster than sub2ind
 r = rem(maxLoc - 1, fmi_height) + 1;
 
-% Automatically output results for multiple peaks from the
-% FMC plane.
-multi_peak = 1;
+% Automatically output results for multiple peaks from the FMC plane.
+multi_peak_flag = 1;
 
 % Shift the FFT correlation plane so that the peak is in the center of the plane.
 % Double if statement to avoid logical OR (which is slow)
@@ -40,28 +39,24 @@ if r <= 9
     % Shift the plane so the peak is in the center.
     fmi_correlation_plane = fftshift(fmi_correlation_plane, 1);
     % Subpixel peak finding
-    [fy, fmi_peak_shift_x] = subpixel(fmi_correlation_plane, ones([fmi_height, fmi_width]), 1, multi_peak);
+    [fy, fmi_peak_shift_x, fmc_peak_heights] = subpixel(fmi_correlation_plane, ones([fmi_height, fmi_width]), 1, multi_peak_flag);
     fmi_peak_shift_y = fy + (fmi_height / 2);
 elseif r >= (fmi_height - 8)
     
     % Shift the plane so the peak is in the center
     fmi_correlation_plane = fftshift(fmi_correlation_plane, 1);
     % Subpixel peak finding
-    [fy, fmi_peak_shift_x] = subpixel(fmi_correlation_plane, ones([fmi_height, fmi_width]), 1, multi_peak);
+    [fy, fmi_peak_shift_x, fmc_peak_heights] = subpixel(fmi_correlation_plane, ones([fmi_height, fmi_width]), 1, multi_peak_flag);
     fmi_peak_shift_y = fy + (fmi_height / 2);
 else
     
     % Subpixel peak finding
-    [fmi_peak_shift_y, fmi_peak_shift_x] = ...
-        subpixel(fmi_correlation_plane, ones([fmi_height, fmi_width]), 1, multi_peak);
+    [fmi_peak_shift_y, fmi_peak_shift_x, fmc_peak_heights] = ...
+        subpixel(fmi_correlation_plane, ones([fmi_height, fmi_width]), 1, multi_peak_flag);
 end
 
-% Measure the FMI peak height ratio.
-if COMPILED
-    FMC_PEAK_HEIGHT_RATIO = measurePeakHeightRatio(fmi_correlation_plane);
-else
-    FMC_PEAK_HEIGHT_RATIO = measurePeakHeightRatio(fmi_correlation_plane);
-end
+% Measure the ratio of the largest to second largest correlation peaks.
+FMC_PEAK_HEIGHT_RATIO = fmc_peak_heights(1) / fmc_peak_heights(2);
 
 % Angular shift in radians. In image coordinates, a positive rotation angle
 % indicates a clockwise rotation. This is because the positive direction of the vertical axis is downward in image coordinates. 
@@ -78,13 +73,13 @@ yc = regionHeight / 2 - 0.5;
 % Reset the multi_peak flag depending on the peak height ratio 
 % of the FMC plane. Use multiple peaks for peak height ratios
 % lower than 1.5 (arbitrary)
-multi_peak = FMC_PEAK_HEIGHT_RATIO < 1.5;
+multi_peak_flag = FMC_PEAK_HEIGHT_RATIO < 1.5;
 
 % Resolve the rotation ambiguity
 [TH, S, TX, TY, RPC_PEAK_HEIGHT_RATIO, RPC_PEAK_HEIGHT, RPC_PEAK_DIAMETER] ...
     = resolveRotationAmbiguity(REGION1, REGION2, ...
     SPATIALWINDOW, IMAGESPECTRALFILTER, ...
-    estimated_rotation_initial, estimated_scaling_initial, (YREGION - 1) - yc, (XREGION - 1) - xc, multi_peak, DIFFERENCEMETHOD, COMPILED);
+    estimated_rotation_initial, estimated_scaling_initial, (YREGION - 1) - yc, (XREGION - 1) - xc, multi_peak_flag, DIFFERENCEMETHOD, COMPILED);
        
 end
 

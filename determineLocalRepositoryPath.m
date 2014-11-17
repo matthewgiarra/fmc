@@ -9,7 +9,7 @@ currentDirectory = pwd;
 % 'StereoPIV', which we know is common to this project. Add 8 because this
 % function finds the location of the letter 'S' in 'StereoPIV', and we want to
 % find the location of the end of the word 'StereoPIV'
-repositoryLoc = regexp(currentDirectory, 'FMISPOMF') + 7;
+repositoryLoc = regexpi(currentDirectory, 'fmc') + 2;
 
 % This is the system-local path to the StereoPIV folder.
 LOCALPATH = currentDirectory(1:repositoryLoc(1));

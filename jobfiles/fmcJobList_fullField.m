@@ -3,13 +3,13 @@ function JOBLIST = fmcJobList_fullField()
 % Job information
 DefaultJob.ImageType = 'synthetic';
 DefaultJob.SetType = 'vortex';
-DefaultJob.CaseName = 'lambvortex_2014-05-22_centralDifference';
-% DefaultJob.DataRepository = 'analysis/data';
-DefaultJob.DataRepository = '~/Desktop/lambvortex_2014-05-22_centralDifference/c_0.0250/lambvortex_h1024_w1024_00001/raw';
+DefaultJob.CaseName = 'lambvortex_2014-11-17';
+DefaultJob.DataRepository = 'analysis/data';
+% DefaultJob.DataRepository = '~/Desktop/lambvortex_2014-05-22_centralDifference/c_0.0250/lambvortex_h1024_w1024_00001/raw';
 
 % Job options
 DefaultJob.JobOptions.NumberOfProcessors = 1;
-DefaultJob.JobOptions.DataRepositoryIsAbsolute = 1;
+DefaultJob.JobOptions.DataRepositoryIsAbsolute = 0;
 DefaultJob.JobOptions.ImageRotationAngle = 0;
 DefaultJob.JobOptions.SimulateBeam = 0;
 DefaultJob.JobOptions.SimulateNoise = 0;
@@ -27,7 +27,7 @@ DefaultJob.Parameters.Images.Extension = '.tiff';
 DefaultJob.Parameters.Images.NumberOfDigits = 6;
 DefaultJob.Parameters.Images.FrameStep = 1;
 DefaultJob.Parameters.Images.CorrelationStep = 1;
-DefaultJob.Parameters.Images.ParticleConcentration = 0.025;
+DefaultJob.Parameters.Images.ParticleConcentration = 0.1;
 
 % Set options
 DefaultJob.Parameters.Sets.Start = 1;
@@ -117,12 +117,12 @@ SegmentItem.Parameters.Processing(1).DwoMaxConvergenceIterations = 1;
 SegmentItem.Parameters.Processing(1).DoImageDeformation = 0;
 SegmentItem.Parameters.Processing(1).DoImageDisparity = 0;
 SegmentItem.Parameters.Processing(1).Smoothing.DoSmoothing = 0;
-SegmentItem.Parameters.Processing(1).Correlation.Method = 'rpc';
+SegmentItem.Parameters.Processing(1).Correlation.Method = 'fmc';
 
 % Append segment item.
 JOBLIST(1) = SegmentItem;
 
-SegmentItem.Parameters.Processing(1).Correlation.Method = 'fmc';
+SegmentItem.Parameters.Processing(1).Correlation.Method = 'rpc';
 JOBLIST(end + 1) = SegmentItem;
 
 

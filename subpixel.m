@@ -1,7 +1,11 @@
-function [v, u, M, D, MAXVAL] = subpixel(SPATIALCORRELATION, W, Method, Peakswitch)
+%#codegen
+function [v, u, M, D, MAXVAL] = subpixel(SPATIALCORRELATION, CORRELATION_WINDOW, Method, Peakswitch, COMPILED)
 % This poorly commented function was taken from PRANA
 
-try
+% Default to using compiled codes.
+if nargin < 5
+    COMPILED = 1;
+end
 
 MAXVAL = max(SPATIALCORRELATION(:));
     
@@ -33,9 +37,15 @@ else
         u=zeros(1,3);
         v=zeros(1,3);
         D=zeros(1,3);
-        %Locate peaks using imregionalmax
-        A=imregionalmax(SPATIALCORRELATION);
-        peakmat=SPATIALCORRELATION.*A;
+        
+        % Choose whether or not to use compiled codes.
+        if COMPILED
+            %Locate peaks using imregionalmax
+            peakmat = locate_correlation_peaks_mex(SPATIALCORRELATION);
+        else
+            peakmat = locate_correlation_peaks(SPATIALCORRELATION);
+        end
+        
         for i=2:3
             peakmat(peakmat==M(i-1))=0;
             [M(i),I(i)]=max(peakmat(:));
@@ -159,7 +169,7 @@ else
             if y_max>correlationHeight
                 y_max=correlationHeight;
             end
-            points=SPATIALCORRELATION(y_min:y_max,x_min:x_max).*W(y_min:y_max,x_min:x_max);
+            points=SPATIALCORRELATION(y_min:y_max,x_min:x_max).*CORRELATION_WINDOW(y_min:y_max,x_min:x_max);
             
             %Options for the lsqnonlin solver
             options=optimset('MaxIter',1200,'MaxFunEvals',5000,'TolX',5e-6,'TolFun',5e-6,...
@@ -173,15 +183,11 @@ else
             [xloc, yloc] = meshgrid(x_min:x_max,y_min:y_max);
 
             %Run solver; default to 3-point gauss if it fails
-            try
-                xvars=lsqnonlin(@leastsquares2D,x0,[],[],options,points(:),[yloc(:),xloc(:)],method);
-                shift_errx=xvars(4)-shift_locx;
-                shift_erry=xvars(5)-shift_locy;
-                D(i) = sqrt(sigma^2/(2*abs(xvars(2))));
-            catch %#ok
-%                 method=1;
-                keyboard
-            end
+            xvars=lsqnonlin(@leastsquares2D,x0,[],[],options,points(:),[yloc(:),xloc(:)],method);
+            shift_errx=xvars(4)-shift_locx;
+            shift_erry=xvars(5)-shift_locy;
+            D(i) = sqrt(sigma^2/(2*abs(xvars(2))));
+
         end
         
         if method==1
@@ -194,10 +200,10 @@ else
             if isempty(shift_errx)
                 %gaussian fit
                 % Log of correlation @ minus 1 
-                lCm1 = log(SPATIALCORRELATION( shift_locy , shift_locx-1 )* W( shift_locy , shift_locx-1 ));
-                lC00 = log(SPATIALCORRELATION( shift_locy , shift_locx   )* W( shift_locy , shift_locx   ));
+                lCm1 = log(SPATIALCORRELATION( shift_locy , shift_locx-1 )* CORRELATION_WINDOW( shift_locy , shift_locx-1 ));
+                lC00 = log(SPATIALCORRELATION( shift_locy , shift_locx   )* CORRELATION_WINDOW( shift_locy , shift_locx   ));
                 % 
-                lCp1 = log(SPATIALCORRELATION( shift_locy , shift_locx+1 )* W( shift_locy , shift_locx+1 ));
+                lCp1 = log(SPATIALCORRELATION( shift_locy , shift_locx+1 )* CORRELATION_WINDOW( shift_locy , shift_locx+1 ));
                 
                 if (2*(lCm1+lCp1-2*lC00)) == 0
                     shift_errx = 0;
@@ -212,9 +218,9 @@ else
             end
             
             if isempty(shift_erry)
-                lCm1 = log(SPATIALCORRELATION( shift_locy-1 , shift_locx )* W( shift_locy-1 , shift_locx ));
-                lC00 = log(SPATIALCORRELATION( shift_locy   , shift_locx )* W( shift_locy   , shift_locx ));
-                lCp1 = log(SPATIALCORRELATION( shift_locy+1 , shift_locx )* W( shift_locy+1 , shift_locx ));
+                lCm1 = log(SPATIALCORRELATION( shift_locy-1 , shift_locx )* CORRELATION_WINDOW( shift_locy-1 , shift_locx ));
+                lC00 = log(SPATIALCORRELATION( shift_locy   , shift_locx )* CORRELATION_WINDOW( shift_locy   , shift_locx ));
+                lCp1 = log(SPATIALCORRELATION( shift_locy+1 , shift_locx )* CORRELATION_WINDOW( shift_locy+1 , shift_locx ));
                 if (2*(lCm1+lCp1-2*lC00)) == 0
                     shift_erry = 0;
                     Dy = nan;
@@ -237,12 +243,6 @@ else
             u(i)=0; v(i)=0;
         end
     end
-end
-
-catch err
-    fprintf(1, 'Error in subpixel estimator... \n');
-    disp(err.message);
-    keyboard;
 end
 
 end

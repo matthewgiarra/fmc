@@ -356,13 +356,13 @@ while thisPass <= numberOfPasses;
         elseif isRpc
             [estimatedTranslationY(k), estimatedTranslationX(k), rpcPlane, spatialPeakHeight(k), spatialPeakDiameter(k)]...
                 = RPC(spatialWindow .* subRegion1, spatialWindow .* subRegion2,...
-                imageSpectralFilter); 
+                imageSpectralFilter, COMPILED); 
 
             % Measure the peak height ratio
             if COMPILED
-                spatialPeakRatio(k) = measurePeakHeightRatio(rpcPlane);
+                spatialPeakRatio(k) = measurePeakHeightRatio(rpcPlane, COMPILED);
             else
-                spatialPeakRatio(k) = measurePeakHeightRatio(rpcPlane);
+                spatialPeakRatio(k) = measurePeakHeightRatio(rpcPlane, COMPILED);
             end
 
         % Perform SCC analysis.

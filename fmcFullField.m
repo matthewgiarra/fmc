@@ -35,8 +35,23 @@ if startFromExistingField && exist(FILEPATHS.OutputFilePath, 'file')
     load(FILEPATHS.OutputFilePath);
         
     % Set the current pass number to the first specified pass
-    thisPass = JOBFILE.JobOptions.StartPass;
-    p = JOBFILE.JobOptions.StartPass - 1;
+    % If "start from existing" path is specified and 
+    % a starting-pass number is specified less than 2,
+    % then default to starting at pass 2. This 
+    % deals with inputs of 0, negative numbers, 
+    % or confusion about what "starting pass" means.
+    % Presumably if the user specifies starting from an existing
+    % pass, they want to pick things up starting with pass 2
+    % (starting on pass 1 would just repeat pass 1, which is the same
+    % thing as startFromExistingField = 0)
+    if JOBFILE.JobOptions.StartPass < 2
+        thisPass = 2;
+    else
+        thisPass = JOBFILE.JobOptions.StartPass;
+    end
+    
+    % This sets a loop counter for the PIV passes.
+    p = thisPass - 1;
     
     % Create the function variables from the saved data
     % This just entails flipping all the coordinate and 
@@ -548,8 +563,8 @@ CONVERGED = hasConverged;
 
 % Set source field variables to zeros if only one pass was specifed.
 if numberOfPasses < 2
-    source_field_u = zeros(size(X{1}));
-    source_field_v = zeros(size(X{1}));
+    source_field_u{1} = zeros(size(X{1}));
+    source_field_v{1} = zeros(size(X{1}));
 end
 
 % Save the results

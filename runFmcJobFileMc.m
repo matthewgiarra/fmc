@@ -1,6 +1,10 @@
 % function runFmiJobFileMc(SETTYPE, CASENAME, DIMENSIONS, STARTSET, ENDSET, NPROCESSORS)
 function runFmcJobFileMc(JOBLIST)
 
+% Add paths
+addpath errorAnalysis;
+addpath ba_interpolation;
+
 nJobs = length(JOBLIST);
 
 for n = 1 : nJobs
@@ -59,8 +63,6 @@ setFormat = ['%0' num2str(setDigits) '.0f'];
 % Number of digits in image names
 imageDigits = 6;
 imageNumberFormat = ['%0' num2str(imageDigits) '.0f'];
-% IMAGESTEP = 1; % Not sure why this is specified. Image step should always be 1 for this analysis, I think.
-EXTENSION = '.tiff';
 
 spatialWindowType =  JOBFILE.Parameters.Processing.SpatialWindowType; % Spatial window type
 spatialWindowFraction = JOBFILE.Parameters.Processing.SpatialWindowFraction; % Spatial image window fraction (y, x)
@@ -131,7 +133,7 @@ for k = 1 : nSets
 
         % Perform analysis
         if strcmpi(correlationType, 'fmc')
-            fmiErrorAnalysisMonteCarlo(JOBFILE, SAVEPATH, imageFilePath, imageDigits, parametersPath, SPATIALWINDOW, IMAGESPECTRALFILTER, consts, nProcessors); 
+            fmiErrorAnalysisMonteCarlo(JOBFILE, SAVEPATH, imageFilePath, parametersPath, SPATIALWINDOW, IMAGESPECTRALFILTER, consts, nProcessors); 
         elseif strcmpi(correlationType, 'rpc')
             rpcErrorAnalysisMonteCarlo(JOBFILE, IMDIR, SAVEPATH, imageFilePath, imageDigits, parametersPath, SPATIALWINDOW, IMAGESPECTRALFILTER, consts, SAVEDATA, nProcessors); 
         elseif strcmpi(correlationType, 'lpc');

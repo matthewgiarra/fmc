@@ -2,3 +2,6 @@
 *.mex*
 .DS_Store
 *codegen*
+*.png
+*.jpg
+*.tif*

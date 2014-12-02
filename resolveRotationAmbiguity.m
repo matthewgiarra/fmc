@@ -168,13 +168,10 @@ th = -angleIn;
 % image, so it shouldn't be inefficient to do this outside the "if"
 % statements.
 % This transforms the first image.
-
 imageTest_1 = transformImage(image1, xImage, yImage, matrix_11, COMPILED);
-% imageTest_1 = transformImage_sinc(image1, xImage, yImage, matrix_11);
 
 % This transforms the second image.
 imageTest_2 = transformImage(image2, xImage, yImage, matrix_21, COMPILED);
-% imageTest_2 = transformImage_sinc(image2, xImage, yImage, matrix_21);
 
 % This is does the RPC correlation between the aligned first and second
 % images that were aligned using the originally-calculated rotation angle.
@@ -185,39 +182,31 @@ imageTest_2 = transformImage(image2, xImage, yImage, matrix_21, COMPILED);
 % originally-calculated rotation angle.
 [peakRatio1, ~] = measurePeakHeightRatio(spatialCorr, COMPILED);
 
-% Only check for the other angle if the first estimate of the rotation
-% angle is greater than pi/2. Keep the original variable names to save speed
+% Check for the other angle. Keep the original variable names to save speed
 % on memory allocation.
-if abs(angleIn) >= pi / 2
-    
-    % Similarity matrices
-    [matrix_12, matrix_22] = makeSimilarityMatrices(th + pi, scalingIn, differenceMethod);
+ 
+% Similarity matrices
+[matrix_12, matrix_22] = makeSimilarityMatrices(th + pi, scalingIn, differenceMethod);
 
-    % This is the FIRST image rotated by half the originally calculated
-    % rotation angle + pi and scaled by the square root of the originally calculated
-    % scaling factor, all in the FORWARD difference direction. 
-    imageTest_1 = transformImage(image1, xImage, yImage, matrix_12, COMPILED);
+% This is the FIRST image rotated by half the originally calculated
+% rotation angle + pi and scaled by the square root of the originally calculated
+% scaling factor, all in the FORWARD difference direction. 
+imageTest_1 = transformImage(image1, xImage, yImage, matrix_12, COMPILED);
 
-    % This is the SECOND image rotated by half the originally calculated
-    % rotation angle + pi and scaled by the square root of the originally calculated
-    % scaling factor, all in the BACKWARD difference direction. 
-    imageTest_2 = transformImage(image2, xImage, yImage, matrix_22, COMPILED);
+% This is the SECOND image rotated by half the originally calculated
+% rotation angle + pi and scaled by the square root of the originally calculated
+% scaling factor, all in the BACKWARD difference direction. 
+imageTest_2 = transformImage(image2, xImage, yImage, matrix_22, COMPILED);
 
-    % This is does the RPC correlation between the forward-transformed first
-    % image and the backward-transformed second image, for the originally
-    % calculated rotation angle + pi.
-    [ty2, tx2, spatialCorr, peakHeight2, peakDiameter2] = RPC(spatialWindow .* imageTest_1, spatialWindow .* imageTest_2, spectralFilter, COMPILED);
+% This is does the RPC correlation between the forward-transformed first
+% image and the backward-transformed second image, for the originally
+% calculated rotation angle + pi.
+[ty2, tx2, spatialCorr, peakHeight2, peakDiameter2] = RPC(spatialWindow .* imageTest_1, spatialWindow .* imageTest_2, spectralFilter, COMPILED);
 
-    % This calculates the peak ratio and peak height for the correlation
-    % between the "central difference" correlation for the
-    % originally-calculated rotation angle + pi.
-    [peakRatio2, ~] = measurePeakHeightRatio(spatialCorr, COMPILED);
-else
-    peakHeight2 = 0;
-    peakDiameter2 = 0;
-    tx2 = 0;
-    ty2 = 0;
-end
+% This calculates the peak ratio and peak height for the correlation
+% between the "central difference" correlation for the
+% originally-calculated rotation angle + pi.
+[peakRatio2, ~] = measurePeakHeightRatio(spatialCorr, COMPILED);
 
 % If backward difference was used, then the vector needs to be rotated and
 % scaled to transform it into forward-time velocity.

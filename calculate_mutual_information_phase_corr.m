@@ -1,4 +1,4 @@
-function [MUTUAL_INFORMATION, MAX_INTENSITY_MEAN, AUTO_CORR_PEAK_DIAMETER_MEAN] = calculate_mutual_information_phase_corr(REGION_01, REGION_02, COMPILED)
+function [MUTUAL_INFORMATION, MAX_INTENSITY_MEAN, AUTO_CORR_PEAK_DIAMETER_MEAN, CROSS_CORRELATION_MAGNITUDE_REAL, CROSS_CORRELATION_PHASE_REAL] = calculate_mutual_information_phase_corr(REGION_01, REGION_02, COMPILED)
 % [MUTUAL_INFORMATION, MAX_INTENSITY_MEAN, AUTO_CORR_PEAK_DIAMETER_MEAN] = calculate_mutual_information_phase_corr(REGION_01, REGION_02, COMPILED)
 % This function is used to calculates the "mutual information" between two
 % PIV interrogation regions (IRs). Mutual information is defined here 
@@ -61,12 +61,21 @@ fourier_transform_02 = fftn(double(REGION_02),[region_height region_width]);
 
 % This is the inverse Fourier transform of the magnitude of the
 % complex Fourier transform between the two interrogation regions.
-spectral_magnitude = fftshift(abs(ifftn(abs(fourier_transform_02 .* conj(fourier_transform_01)), [region_height, region_width], 'symmetric')));
+% spectral_magnitude = fftshift(abs(ifftn(abs(fourier_transform_02 .* conj(fourier_transform_01)), [region_height, region_width], 'symmetric')));
+cross_correlation_complex = (fourier_transform_02 .* conj(fourier_transform_01));
+
+% Separate the complex cross correlation into its magnitude and phase.
+[cross_correlation_phase_complex, cross_correlation_magnitude_complex] = splitComplex(cross_correlation_complex);
+
+% Inverse fourier transform and shift coordinates of the spectral phase and
+% magnitude.
+CROSS_CORRELATION_PHASE_REAL     = freq2space(cross_correlation_phase_complex, region_height, region_width);
+CROSS_CORRELATION_MAGNITUDE_REAL = freq2space(cross_correlation_magnitude_complex, region_height, region_width);
 
 % Subtract the minimum value of the magnitude 
 % so that the peak height ratio is meaningful, then calculate
 % the max value of this minumum-subtracted array.
-spectral_magnitude_min_subtracted_max = max(spectral_magnitude(:) - min(spectral_magnitude(:)));
+spectral_magnitude_min_subtracted_max = max(CROSS_CORRELATION_MAGNITUDE_REAL(:) - min(CROSS_CORRELATION_MAGNITUDE_REAL(:)));
 
 % Calucluate the complex spectral autocorrelations
 % of the two interrogation regions.

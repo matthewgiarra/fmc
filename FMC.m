@@ -16,7 +16,7 @@ function [TY, TX, TH, S, FMC_PEAK_HEIGHT_RATIO, RPC_PEAK_HEIGHT_RATIO, RPC_PEAK_
 [fmi_height, fmi_width] = size(FMI_01);
 
 % Perform the cross phase-only correlation of the two FMI descriptors.
-spectralRPC = fftshift(phaseOnlyFilter(fftn(FMI_WINDOW .* FMI_02, [fmi_height, fmi_width]) .* conj(fftn(FMI_WINDOW .* FMI_01, [fmi_height, fmi_width])))) .* FMI_SPECTRAL_FILTER;
+spectralRPC = fftshift(splitComplex(fftn(FMI_WINDOW .* FMI_02, [fmi_height, fmi_width]) .* conj(fftn(FMI_WINDOW .* FMI_01, [fmi_height, fmi_width])))) .* FMI_SPECTRAL_FILTER;
 
 % Convert the phase correlation plane of the two input images from the spectral domain to the spatial domain
 fmi_correlation_plane = freq2space(spectralRPC, fmi_height, fmi_width);

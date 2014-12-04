@@ -6,20 +6,20 @@ DefaultJob.JobOptions.BooleanGenerateParticleImages = false;
 DefaultJob.JobOptions.BooleanRunAnalysis = true;
 DefaultJob.JobOptions.FlipYTranslation = false;
 DefaultJob.JobOptions.SkipExistingSets = false;
-DefaultJob.JobOptions.RepositoryPathIsAbsolute = 0;
+DefaultJob.JobOptions.RepositoryPathIsAbsolute = 1;
 DefaultJob.JobOptions.DoAffineTransform = 0;
 DefaultJob.JobOptions.RunCompiled = 1;
 
 DefaultJob.ImageType = 'synthetic';
-DefaultJob.SetType = 'mc';
+DefaultJob.SetType = 'lin';
 DefaultJob.CaseName = 'full_field_registration';
 DefaultJob.CorrelationType = 'fmc';
 DefaultJob.Parameters.RegionHeight = 64;
 DefaultJob.Parameters.RegionWidth = 64;
 DefaultJob.Parameters.Sets.Start = 1;
 DefaultJob.Parameters.Sets.End = 1;
-DefaultJob.Parameters.Sets.ImagesPerSet = 10;
-DefaultJob.Parameters.RepositoryPath =  '/home/voodoo/Desktop/images';
+DefaultJob.Parameters.Sets.ImagesPerSet = 100;
+DefaultJob.Parameters.RepositoryPath =  '~/Desktop/piv_test_images';
 
 DefaultJob.Parameters.Processing.SpatialWindowFraction = [0.5 0.5];
 DefaultJob.Parameters.Processing.FMIWindowFraction = [1, 1, 0];
@@ -47,36 +47,19 @@ DefaultJob.Parameters.Processing.Noise.Std = 0.00;
 
 % JOB 1
 SegmentItem = DefaultJob;
-SegmentItem.CaseName = 'full_field_registration';
+SegmentItem.CaseName = '2014-12-04_disparity_test_lin';
 SegmentItem.CorrelationType = 'fmc';
-SegmentItem.Parameters.Sets.ImagesPerSet = 10;
-SegmentItem.Parameters.RegionHeight = 512;
-SegmentItem.Parameters.RegionWidth = 512;
+SegmentItem.Parameters.Sets.ImagesPerSet = 100;
+SegmentItem.Parameters.RegionHeight = 64;
+SegmentItem.Parameters.RegionWidth = 64;
 SegmentItem.Parameters.Processing.FmiRPCDiameter = 3.3;
-SegmentItem.Parameters.Processing.SpatialWindowFraction = 0.10 * [1 1];
+SegmentItem.Parameters.Processing.SpatialWindowFraction = 0.50 * [1 1];
 SegmentItem.Parameters.Processing.NumberOfRings.Min = 64;
 SegmentItem.Parameters.Processing.NumberOfRings.Max = 64;
 SegmentItem.Parameters.Processing.NumberOfWedges.Min = 256;
 SegmentItem.Parameters.Processing.NumberOfWedges.Max = 256;
 SegmentItem.Parameters.Processing.FFTSize = [128, 128];
 JOBLIST(1) = SegmentItem;
-
-% JOB 2
-SegmentItem = DefaultJob;
-SegmentItem.CaseName = 'FMCtest_translation_rotation';
-SegmentItem.CorrelationType = 'fmc';
-SegmentItem.Parameters.Sets.ImagesPerSet = 1000;
-SegmentItem.Parameters.RegionHeight = 64;
-SegmentItem.Parameters.RegionWidth = 64;
-SegmentItem.Parameters.Processing.FmiRPCDiameter = 3.3;
-SegmentItem.Parameters.Processing.NumberOfRings.Min = 64;
-SegmentItem.Parameters.Processing.NumberOfRings.Max = 64;
-SegmentItem.Parameters.Processing.NumberOfWedges.Min = 256;
-SegmentItem.Parameters.Processing.NumberOfWedges.Max = 256;
-SegmentItem.Parameters.Processing.FFTSize = [128, 128];
-SegmentItem.Parameters.Processing.SpatialWindowFraction = [0.5 0.5];
-JOBLIST(end + 1) = SegmentItem;
-
 
 end
 

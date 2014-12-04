@@ -341,17 +341,12 @@ while thisPass <= numberOfPasses;
     t = tic;
     
     % Do all the correlations for the image.
-    parfor k = 1 : nRegions
+    for k = 1 : nRegions
         
         % Extract the subregions from the subregion stacks.
         subRegion1 = regionMatrix1(:, :, k);
         subRegion2 = regionMatrix2(:, :, k);
-        
-        % Calculate disparity
-        if calculateImageDisparity
-            [disparity_x_vector(k), disparity_y_vector(k), nParticles(k)] = regionDisparity(subRegion1, subRegion2, 0.95);
-        end
-        
+                
         % Perform FMC processing. 
         if isFmc
             % Perform the FMC correlation.
@@ -384,7 +379,15 @@ while thisPass <= numberOfPasses;
         elseif isScc
             [estimatedTranslationY(k), estimatedTranslationX(k), spatialPeakRatio(k)]...
                 = SCC(spatialWindow .* subRegion1, spatialWindow .* subRegion2);
-        end    
+        end
+        
+        % These lines will calculate the disparity between regions.
+        if calculateImageDisparity
+            [DISPARITY_X, DISPARITY_Y] = calculateTransformedRegionDisparity(subRegion1, subRegion2,...
+                estimatedTranslationY(k), estimatedTranslationX(k),...
+                estimatedRotation(k), estimatedScaling(k), xImage, yImage, 0.95, 2, COMPILED);
+        end
+        
     end % end for k = 1 : nRegions
 
     % Inform the user

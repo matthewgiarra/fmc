@@ -8,7 +8,7 @@ DefaultJob.CaseName = 'grid_01_test_01';
 DefaultJob.DataRepository = '/Users/matthewgiarra/Documents/School/VT/Research/Aether/stagnation_flow/grid_01_test_01/raw';
 
 % Job options
-DefaultJob.JobOptions.NumberOfProcessors = 8;
+DefaultJob.JobOptions.NumberOfProcessors = 1;
 DefaultJob.JobOptions.DataRepositoryIsAbsolute = 1;
 DefaultJob.JobOptions.ImageRotationAngle = 0;
 DefaultJob.JobOptions.SimulateBeam = 0;
@@ -118,32 +118,32 @@ SegmentItem.Parameters.Processing(1).DoDiscreteWindowOffset = 0;
 SegmentItem.Parameters.Processing(1).DwoConverge = 0;
 SegmentItem.Parameters.Processing(1).DwoMaxConvergenceIterations = 1;
 SegmentItem.Parameters.Processing(1).DoImageDeformation = 1;
-SegmentItem.Parameters.Processing(1).DoImageDisparity = 0;
+SegmentItem.Parameters.Processing(1).DoImageDisparity = 1;
 SegmentItem.Parameters.Processing(1).Smoothing.DoSmoothing = 0;
-SegmentItem.Parameters.Processing(1).Correlation.Method = 'rpc';
+SegmentItem.Parameters.Processing(1).Correlation.Method = 'fmc';
 SegmentItem.Parameters.Processing(1).InterrogationRegion.SpatialWindowFraction = [0.5 0.5];
 
 % Append segment item.
 JOBLIST(1) = SegmentItem;
-
-SegmentItem.Parameters.Images.CorrelationStep = 2;
-JOBLIST(end + 1) = SegmentItem;
-
-SegmentItem.Parameters.Images.CorrelationStep = 3;
-JOBLIST(end + 1) = SegmentItem;
-
-% Switch to FMC
-SegmentItem.Parameters.Processing(1).Correlation.Method = 'fmc';
-
-% Reset correlation step
-SegmentItem.Parameters.Images.CorrelationStep = 1;
-JOBLIST(end + 1) = SegmentItem;
-
-SegmentItem.Parameters.Images.CorrelationStep = 2;
-JOBLIST(end + 1) = SegmentItem;
-
-SegmentItem.Parameters.Images.CorrelationStep = 3;
-JOBLIST(end + 1) = SegmentItem;
+% 
+% SegmentItem.Parameters.Images.CorrelationStep = 2;
+% JOBLIST(end + 1) = SegmentItem;
+% 
+% SegmentItem.Parameters.Images.CorrelationStep = 3;
+% JOBLIST(end + 1) = SegmentItem;
+% 
+% % Switch to FMC
+% SegmentItem.Parameters.Processing(1).Correlation.Method = 'fmc';
+% 
+% % Reset correlation step
+% SegmentItem.Parameters.Images.CorrelationStep = 1;
+% JOBLIST(end + 1) = SegmentItem;
+% 
+% SegmentItem.Parameters.Images.CorrelationStep = 2;
+% JOBLIST(end + 1) = SegmentItem;
+% 
+% SegmentItem.Parameters.Images.CorrelationStep = 3;
+% JOBLIST(end + 1) = SegmentItem;
 
 end
 

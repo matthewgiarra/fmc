@@ -1,5 +1,5 @@
 %#codegen
-function [v, u, M, D, MAXVAL] = subpixel(SPATIALCORRELATION, CORRELATION_WINDOW, Method, Peakswitch, COMPILED)
+function [peak_shift_rows, peak_shift_cols, corr_max_val, corr_peak_diameter, corr_max_val_delete] = subpixel(SPATIALCORRELATION, CORRELATION_WINDOW, Method, Peakswitch, COMPILED)
 % This poorly commented function was taken from PRANA
 
 % Default to using compiled codes.
@@ -7,7 +7,9 @@ if nargin < 5
     COMPILED = 1;
 end
 
-MAXVAL = max(SPATIALCORRELATION(:));
+% This is redundant and can be deleted.
+% Make sure deleting this won't break other function calls furst.
+corr_max_val_delete = max(SPATIALCORRELATION(:));
     
 % Determine size of spatial correlation
 [correlationHeight, correlationWidth] = size(SPATIALCORRELATION);
@@ -17,26 +19,26 @@ cc_x = -correlationWidth/2 : correlationWidth/2 - 1;
 cc_y = -correlationHeight/2:correlationHeight/2-1;
 
 %find maximum correlation value
-[M, I] = max(SPATIALCORRELATION(:));
+[corr_max_val, corr_max_val_index] = max(SPATIALCORRELATION(:));
 
 % Use 4 standard deviations for the peak sizing (e^-2)
 sigma = 4;
 
 %if correlation empty
-if M == 0
+if corr_max_val == 0
     if Peakswitch
-        u=zeros(1,3);
-        v=zeros(1,3);
-        M=zeros(1,3);
-        D=zeros(1,3);
+        peak_shift_cols=zeros(1,3);
+        peak_shift_rows=zeros(1,3);
+        corr_max_val=zeros(1,3);
+        corr_peak_diameter=zeros(1,3);
     else
-        u=0; v=0; M=0; D=0; 
+        peak_shift_cols=0; peak_shift_rows=0; corr_max_val=0; corr_peak_diameter=0; 
     end
 else
     if Peakswitch
-        u=zeros(1,3);
-        v=zeros(1,3);
-        D=zeros(1,3);
+        peak_shift_cols=zeros(1,3);
+        peak_shift_rows=zeros(1,3);
+        corr_peak_diameter=zeros(1,3);
         
         % Choose whether or not to use compiled codes.
         if COMPILED
@@ -47,14 +49,14 @@ else
         end
         
         for i=2:3
-            peakmat(peakmat==M(i-1))=0;
-            [M(i),I(i)]=max(peakmat(:));
+            peakmat(peakmat==corr_max_val(i-1))=0;
+            [corr_max_val(i),corr_max_val_index(i)]=max(peakmat(:));
         end
-        j=length(M);
+        j=length(corr_max_val);
     else
-        u=zeros(1,1);
-        v=zeros(1,1);
-        D=zeros(1,1);
+        peak_shift_cols=zeros(1,1);
+        peak_shift_rows=zeros(1,1);
+        corr_peak_diameter=zeros(1,1);
         j=1;    
     end
     
@@ -62,8 +64,8 @@ else
         method=Method;
         
         %find x and y indices
-        shift_locy = 1+mod(I(i)-1,correlationHeight);
-        shift_locx = ceil(I(i)/correlationHeight);
+        shift_locy = 1+mod(corr_max_val_index(i)-1,correlationHeight);
+        shift_locx = ceil(corr_max_val_index(i)/correlationHeight);
 
         shift_errx=[];
         shift_erry=[];
@@ -71,30 +73,30 @@ else
         if shift_locx == 1
 %             keyboard
             %boundary condition 1
-            shift_errx =  SPATIALCORRELATION( shift_locy , shift_locx+1 )/M(i); method=1;
+            shift_errx =  SPATIALCORRELATION( shift_locy , shift_locx+1 )/corr_max_val(i); method=1;
         elseif shift_locx == correlationWidth
             %boundary condition 2
-            shift_errx = -SPATIALCORRELATION( shift_locy , shift_locx-1 )/M(i); method=1;
+            shift_errx = -SPATIALCORRELATION( shift_locy , shift_locx-1 )/corr_max_val(i); method=1;
         elseif SPATIALCORRELATION( shift_locy , shift_locx+1 ) == 0
             %endpoint discontinuity 1
-            shift_errx = -SPATIALCORRELATION( shift_locy , shift_locx-1 )/M(i); method=1;
+            shift_errx = -SPATIALCORRELATION( shift_locy , shift_locx-1 )/corr_max_val(i); method=1;
         elseif SPATIALCORRELATION( shift_locy , shift_locx-1 ) == 0
             %endpoint discontinuity 2
-            shift_errx =  SPATIALCORRELATION( shift_locy , shift_locx+1 )/M(i); method=1;
+            shift_errx =  SPATIALCORRELATION( shift_locy , shift_locx+1 )/corr_max_val(i); method=1;
         end
         if shift_locy == 1
 %             keyboard
             %boundary condition 1
-            shift_erry = -SPATIALCORRELATION( shift_locy+1 , shift_locx )/M(i); method=1;
+            shift_erry = -SPATIALCORRELATION( shift_locy+1 , shift_locx )/corr_max_val(i); method=1;
         elseif shift_locy == correlationHeight
             %boundary condition 2
-            shift_erry =  SPATIALCORRELATION( shift_locy-1 , shift_locx )/M(i); method=1;
+            shift_erry =  SPATIALCORRELATION( shift_locy-1 , shift_locx )/corr_max_val(i); method=1;
         elseif SPATIALCORRELATION( shift_locy+1 , shift_locx ) == 0
             %endpoint discontinuity 1
-            shift_erry =  SPATIALCORRELATION( shift_locy-1 , shift_locx )/M(i); method=1;
+            shift_erry =  SPATIALCORRELATION( shift_locy-1 , shift_locx )/corr_max_val(i); method=1;
         elseif SPATIALCORRELATION( shift_locy-1 , shift_locx ) == 0
             %endpoint discontinuity 2
-            shift_erry = -SPATIALCORRELATION( shift_locy+1 , shift_locx )/M(i); method=1;
+            shift_erry = -SPATIALCORRELATION( shift_locy+1 , shift_locx )/corr_max_val(i); method=1;
         end
 
         
@@ -146,7 +148,7 @@ else
             shift_erry=y_centroid-shift_locy;
             
             betas = abs((log(a2)-log(a1))/((x2-x_centroid)^2+(y2-y_centroid)^2-(x1-x_centroid)^2-(y1-y_centroid)^2));
-            D(i)=sqrt(sigma^2/(2*betas));
+            corr_peak_diameter(i)=sqrt(sigma^2/(2*betas));
             
         elseif any(method==[3 4])
             
@@ -178,7 +180,7 @@ else
             
             %Initial values for the solver
 %             x0=[M(i) 1 shift_locx shift_locy];
-              x0 = [M(i), 1, 1, shift_locx, shift_locy, 0];
+              x0 = [corr_max_val(i), 1, 1, shift_locx, shift_locy, 0];
 
             [xloc, yloc] = meshgrid(x_min:x_max,y_min:y_max);
 
@@ -186,7 +188,7 @@ else
             xvars=lsqnonlin(@leastsquares2D,x0,[],[],options,points(:),[yloc(:),xloc(:)],method);
             shift_errx=xvars(4)-shift_locx;
             shift_erry=xvars(5)-shift_locy;
-            D(i) = sqrt(sigma^2/(2*abs(xvars(2))));
+            corr_peak_diameter(i) = sqrt(sigma^2/(2*abs(xvars(2))));
 
         end
         
@@ -233,14 +235,14 @@ else
                 Dy = nan;
             end
             
-            D(i) = nanmean([Dx Dy]);
+            corr_peak_diameter(i) = nanmean([Dx Dy]);
         end
         
-        u(i)=cc_x(shift_locx)+shift_errx;
-        v(i)=cc_y(shift_locy)+shift_erry;
+        peak_shift_cols(i)=cc_x(shift_locx)+shift_errx;
+        peak_shift_rows(i)=cc_y(shift_locy)+shift_erry;
         
-        if isinf(u(i)) || isinf(v(i))
-            u(i)=0; v(i)=0;
+        if isinf(peak_shift_cols(i)) || isinf(peak_shift_rows(i))
+            peak_shift_cols(i)=0; peak_shift_rows(i)=0;
         end
     end
 end

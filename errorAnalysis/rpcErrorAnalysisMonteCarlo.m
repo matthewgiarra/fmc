@@ -80,7 +80,7 @@ if NPROCESSORS > 1
         ImgWindowed2 = SPATIALWINDOW .* IMAGE2;
 
     % Calculate RPC between images. The 0 at the end means "Only take the primary peak.     
-        [estimatedTranslationY(k), estimatedTranslationX(k), correlationPlane] = RPC(ImgWindowed1, ImgWindowed2, IMAGESPECTRALFILTER, 0);
+        [estimatedTranslationY(k), estimatedTranslationX(k)] = RPC(ImgWindowed1, ImgWindowed2, IMAGESPECTRALFILTER, 0);
 
 
     end % End (parfor k = 1 : nImages )
@@ -88,7 +88,7 @@ if NPROCESSORS > 1
 else % Else if nProcessors == 1
 
     for k = 1: nImages
-
+        
         % Read in the first image in the pair 
         IMAGE1 = imageMatrix1(:, :, k) + noiseMatrix1(:, :, k);
 
@@ -100,7 +100,7 @@ else % Else if nProcessors == 1
         ImgWindowed2 = SPATIALWINDOW .* IMAGE2;            
 
         % Calculate RPC between images. The 0 at the end means "only take the primary peak."     
-        [estimatedTranslationY(k), estimatedTranslationX(k), correlationPlane] = RPC(ImgWindowed1, ImgWindowed2, IMAGESPECTRALFILTER, 0);
+        [estimatedTranslationY(k), estimatedTranslationX(k)] = RPC(ImgWindowed1, ImgWindowed2, IMAGESPECTRALFILTER, 0);
 
 
     end % End (for k = 1 : nImages)

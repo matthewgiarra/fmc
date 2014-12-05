@@ -341,7 +341,7 @@ while thisPass <= numberOfPasses;
     t = tic;
     
     % Do all the correlations for the image.
-    for k = 1 : nRegions
+    parfor k = 1 : nRegions
         
         % Extract the subregions from the subregion stacks.
         subRegion1 = regionMatrix1(:, :, k);

@@ -21,7 +21,10 @@ region_01_transformed = transformImage_homogeneous(REGION_01, x_grid, y_grid, ma
 % Transform region 2
 region_02_transformed = transformImage_homogeneous(REGION_02, x_grid, y_grid, matrix_02, COMPILED); 
 
+% Hard code search radius temporarily
+particle_search_radius = 1;
+
 % Calculate the disparity between the images.
-[DISPARITY_X, DISPARITY_Y] = regionDisparity(region_01_transformed, region_02_transformed, CONFIDENCE_INTERVAL);
+[DISPARITY_X, DISPARITY_Y] = regionDisparity(region_01_transformed, region_02_transformed, particle_search_radius, CONFIDENCE_INTERVAL);
 
 end

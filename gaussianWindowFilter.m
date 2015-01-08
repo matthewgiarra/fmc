@@ -47,7 +47,7 @@ xo = round(width/2);
 yo = round(height/2);
 
 % Create grid of x,y positions to hold gaussian filter data
-[x,y] = meshgrid(1:width, 1:height);
+[x, y] = meshgrid(1:width, 1:height);
 
 % Calculate gaussian distribution (X)
 WindowX = exp( - ((x - xo).^2 / (2 * sx^2)));

@@ -55,12 +55,17 @@ if WINDOWSIZEX < xarea
     sxmax = 100 * IMAGESIZEX;
     sxmin = 0;
 
+    % Number of iterations
+    nIter = 0;
+    
     % Iteratively determine the standard deviation that gives the desired
     % effective Gaussian x-window resolution
 
     % Loop while the error of area under curve is above the specified error tolerance
     while xerr > 1E-5
 
+        nIter = nIter + 1;
+        
         %  If the area under the Gaussian curve is less than that of the top-hat window
         if xarea < WINDOWSIZEX
             % Increase the lower bound on the standard deviation
@@ -98,7 +103,7 @@ if WINDOWSIZEY < yarea
 
     % Iteratively determine the standard deviation that gives the desired
     % effective Gaussian y-window resolution
-
+    
     % Loop while the error of area under curve is above the specified error tolerance
     while yerr > 1E-5
 

@@ -181,6 +181,7 @@ imageTest_2 = transformImage(image2, xImage, yImage, matrix_21, COMPILED);
 % between the "central difference" correlation for the
 % originally-calculated rotation angle.
 [peakRatio1, ~] = measurePeakHeightRatio(spatialCorr, COMPILED);
+% peakRatio1 = calculate_mutual_information(imageTest_1, imageTest_2);
 
 % Check for the other angle. Keep the original variable names to save speed
 % on memory allocation.
@@ -207,6 +208,7 @@ imageTest_2 = transformImage(image2, xImage, yImage, matrix_22, COMPILED);
 % between the "central difference" correlation for the
 % originally-calculated rotation angle + pi.
 [peakRatio2, ~] = measurePeakHeightRatio(spatialCorr, COMPILED);
+% peakRatio2 = calculate_mutual_information(imageTest_1, imageTest_2);
 
 % If backward difference was used, then the vector needs to be rotated and
 % scaled to transform it into forward-time velocity.

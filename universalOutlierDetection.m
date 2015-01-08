@@ -24,7 +24,6 @@ stencilElements = [(1 : (2 * r + 1)*r + r), (2 * r + 1)*r + r + 2 : (2*r + 1)^2]
 
 % Initialize the normalized median-difference vectors.
 normDiffs = zeros(fieldHeight, fieldWidth, nVars);
-% isOutlier = zeros(fieldHeight, fieldWidth, nVars);
 
 % Number of elements in the stencil minus the center point
 N = (2 * r + 1)^2 - 1;

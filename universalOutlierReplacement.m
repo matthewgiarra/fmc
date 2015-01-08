@@ -9,7 +9,7 @@ function VALUE_REPLACED = universalOutlierReplacement(VALUE, ISOUTLIER, STENCILR
 r = STENCILRADIUS;
 
 % Outside stencil element numbers
-stencilElements = [(1 : (2 * r + 1)*r + r), (2 * r + 1)*r + r + 2 : (2*r + 1)^2];
+stencilElements = [(1 : (2 * r + 1) * r + r), (2 * r + 1) * r + r + 2 : (2 * r + 1)^2];
 
 % Replicate the candidate replacement values
 VALUE_REPLACED = VALUE;
@@ -18,7 +18,7 @@ VALUE_REPLACED = VALUE;
 for m = 1 + r : fieldHeight - r
    for n = 1 + r : fieldWidth - r
        
-       % Extract the scalar value its surrounding values at
+       % Extract the scalar value its surroundings values at
        % each grid point.
        valueStencil = VALUE(m - r : m + r, n - r : n + r);
 

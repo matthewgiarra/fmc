@@ -8,7 +8,6 @@ function fmcFullField(FILEPATHS, JOBFILE)
 % how to compile mex files on Mac, etc.
 COMPILED = JOBFILE.JobOptions.RunCompiled;
 
-
 % Number of PIV passes
 % Take the minimum of the requested number of passes and the number of pass
 % parameter structures specified.
@@ -447,9 +446,9 @@ while thisPass <= numberOfPasses;
     % The previous codes to do this were "universalOutlierDetection.m"
     % and "universalOutlierReplacement.m"
     % estimate isn't validated.
-    [uVal{p}, vVal{p}, isOutlier{p}] = validateField_prana(gx{p}, gy{p}, TRANSLATIONX{p}, TRANSLATIONY{p});
+    [uVal{p}, vVal{p}, isOutlier{p}] = validateField_prana(gx{p}, gy{p}, TRANSLATIONX{p}, TRANSLATIONY{p}, uodExpectedDifference);
         
-% Check for convergence if it's requested. 
+    % Check for convergence if it's requested. 
     % If the velocity estimate has converged, go on
     % to the next user-specified pass. Otherwise, 
     % repeat the previous pass. 
@@ -555,6 +554,7 @@ for p = 1 : finalNumberOfPasses
     S{p} = flipud(SCALING{p});
     UVAL{p} = flipud(uVal{p});
     VVAL{p} = flipud(vVal{p});
+    IS_OUTLIER{p} = flipud(isOutlier{p});
     
     % TEMPORARY: Don't validate rotation estimate.
     RVAL{p} = zeros(size(R{p}));
@@ -572,7 +572,7 @@ end
 
 % Save the results
 save(FilePaths.OutputFilePath, ...
-    'X', 'Y', 'U', 'V', 'R', 'S',...
+    'X', 'Y', 'U', 'V', 'R', 'S', 'IS_OUTLIER',...
     'UVAL', 'VVAL', 'RVAL', 'tx_raw', 'ty_raw', 'DISPARITY_X', 'DISPARITY_Y', 'N_PARTICLES',...
     'FMC_PEAK_RATIO', 'SPATIAL_PEAK_RATIO', 'PASSNUMBER', 'CONVERGED', 'source_field_u', 'source_field_v', ...
     'FilePaths', 'JobFile');

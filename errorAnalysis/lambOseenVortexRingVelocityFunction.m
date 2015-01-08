@@ -1,19 +1,14 @@
 
 function [U, VORTICITY] = lambOseenVortexRingVelocityFunction(T, X, VORTEXPARAMETERS)
 
-% circulation = VORTEXPARAMETERS.Circulation;
+% These are the physical parameters controlling the vortex
 vortexRadius = VORTEXPARAMETERS.VortexRadius;
 coreRadius = VORTEXPARAMETERS.CoreRadius;
 XC = VORTEXPARAMETERS.XC;
 YC = VORTEXPARAMETERS.YC;
 vortexAngle = VORTEXPARAMETERS.Angle;
-% viscosity = VORTEXPARAMETERS.Viscosity;
 propagationVelocity = VORTEXPARAMETERS.PropagationVelocity;
 maxTangentialVelocity = VORTEXPARAMETERS.PeakVelocity;
-
-% % Convert input coordinates to column vectors
-% x = X(1, :);
-% y = X(2, :);
 
 % Number of points
 nPoints = numel(X)/2;
@@ -39,17 +34,6 @@ yc2 = yc - vortexRadius * cosd(vortexAngle);
 % Transform the particle coordinates to polar coordinates
 [th1, r1] = cart2pol(x - xc1 + 1, y - yc1 + 1);
 [th2, r2] = cart2pol(x - xc2 + 1, y - yc2 + 1);
-
-% % Number of positions (i.e. particles)
-% nPositions = numel(x);
-
-% % Initialize the angular positions of the particles in the second image
-% uTheta1 = zeros(nPoints, 1);
-% uTheta2 = zeros(nPoints, 1);
-
-% Tangential velocities
-% uTheta1 =       circulation ./ (2 * pi * r1) .* (1 - exp(-r1.^2 ./ (4 * viscosity * T)));
-% uTheta2 = - 1 * circulation ./ (2 * pi * r2) .* (1 - exp(-r2.^2 ./ (4 * viscosity * T)));
 
 % Parameter (alpha) defined by Davenport et al, 1996, "The
 % structure and development of a wing-tip vortex"

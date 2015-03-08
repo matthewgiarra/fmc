@@ -9,6 +9,8 @@ nJobs = length(JOBLIST);
 % Run each job in the job list
 for n = 1 : nJobs
     
+    job_tic = tic;
+    
     % Extract the jobfile from the joblist.
     JobFile = JOBLIST(n);
     
@@ -138,7 +140,9 @@ for n = 1 : nJobs
     
     end % End looping over sets   
 
-
+    job_toc = toc(job_tic);
+    fprintf('Total job time: %d seconds\n', job_toc);
+    
 end
 
 

@@ -1,19 +1,19 @@
 function JOBLIST = fmcJobList_fullField()
 
 % Job information
-DefaultJob.ImageType = 'experimental';
+DefaultJob.ImageType = 'synthetic';
 DefaultJob.SetType = 'vortex';
-DefaultJob.CaseName = 'vortexring_2013-11-12_d03_f60_t06';
-DefaultJob.DataRepository = 'analysis/data';
-% DefaultJob.DataRepository = '/Users/matthewgiarra/Documents/School/VT/Research/Aether/stagnation_flow/grid_01_test_01/raw';
+DefaultJob.CaseName = 'piv_benchmark_vortex_images';
+% DefaultJob.DataRepository = '../analysis/data';
+DefaultJob.DataRepository = '../analysis/data/synthetic/vortex/piv_benchmark_vortex_images/c_0.0250/lambvortex_h1024_w1024_00001/raw';
 
 % Job options
 DefaultJob.JobOptions.NumberOfProcessors = 8;
-DefaultJob.JobOptions.DataRepositoryIsAbsolute = 0;
+DefaultJob.JobOptions.DataRepositoryIsAbsolute = 1;
 DefaultJob.JobOptions.ImageRotationAngle = 0;
 DefaultJob.JobOptions.SimulateBeam = 0;
 DefaultJob.JobOptions.SimulateNoise = 0;
-DefaultJob.JobOptions.NumberOfPasses = 3;
+DefaultJob.JobOptions.NumberOfPasses = 5;
 DefaultJob.JobOptions.SkipExisting = 0;
 DefaultJob.JobOptions.LeftHanded = 0;
 DefaultJob.JobOptions.ComparisonType = 'Eulerian';
@@ -22,8 +22,8 @@ DefaultJob.JobOptions.StartPass = 1;
 DefaultJob.JobOptions.RunCompiled = 1;
 
 % Image parameters
-DefaultJob.Parameters.Images.BaseName = 'vortexring_d03_f60_t06_';
-DefaultJob.Parameters.Images.Extension = '.tif';
+DefaultJob.Parameters.Images.BaseName = 'lambvortex_h1024_w1024_';
+DefaultJob.Parameters.Images.Extension = '.tiff';
 DefaultJob.Parameters.Images.NumberOfDigits = 6;
 DefaultJob.Parameters.Images.CorrelationStep = 1;
 DefaultJob.Parameters.Images.ParticleConcentration = 0.1;
@@ -34,9 +34,9 @@ DefaultJob.Parameters.Sets.End = 1;
 DefaultJob.Parameters.Sets.Skip = 1;
 
 % Stard and end images
-DefaultJob.Parameters.Images.Start = 980;
-DefaultJob.Parameters.Images.End = 980;
-DefaultJob.Parameters.Images.FrameStep = 10;
+DefaultJob.Parameters.Images.Start = 1;
+DefaultJob.Parameters.Images.End = 1000;
+DefaultJob.Parameters.Images.FrameStep = 1;
 
 % correlation step list
 c_steps = [11, 12];  
@@ -68,7 +68,7 @@ DefaultJob.Parameters.Processing.Resampling.MinimumRadius = 2;
 DefaultJob.Parameters.Processing.FFTSize = [128, 128];
 
 % Correlation parameters
-DefaultJob.Parameters.Processing.Correlation.Method = 'fmc'; % Correlation type
+DefaultJob.Parameters.Processing.Correlation.Method = 'rpc'; % Correlation type
 DefaultJob.Parameters.Processing.Correlation.SpatialRPCDiameter = 2.8; % RPC filter diameter (pixels)
 DefaultJob.Parameters.Processing.Correlation.FMCDiameter = 3.3; % FMC filter diameter (pixels)
 DefaultJob.Parameters.Processing.Correlation.FMCFilterType = 'relative'; % Relative or fixed FMC filter diameter
@@ -97,7 +97,7 @@ defaultProcessing = DefaultJob.Parameters.Processing;
 SegmentItem = DefaultJob;
 SegmentItem.JobOptions.ImageRotationAngle = 0;
 SegmentItem.Parameters.Images.CorrelationStep = 1;
-SegmentItem.JobOptions.NumberOfPasses = 1;
+SegmentItem.JobOptions.NumberOfPasses = 5;
 
 SegmentItem.JobOptions.StartFromExistingField = 0;
 SegmentItem.JobOptions.StartPass = 1;
@@ -105,14 +105,8 @@ SegmentItem.JobOptions.StartPass = 1;
 % Pass 1
 SegmentItem.Parameters.Processing(1) = defaultProcessing;
 SegmentItem.Parameters.Processing(1).DwoDifferenceMethod = 'central';
-SegmentItem.Parameters.Processing(1).FmcDifferenceMethod = 'central';
-SegmentItem.Parameters.Processing(1).InterrogationRegion.FMIWindowSize = [1 1 0];
-SegmentItem.Parameters.Processing(1).InterrogationRegion.FMIWindowType = 'hann1';
-SegmentItem.Parameters.Processing(1).Resampling.NumberOfRings = 64;
-SegmentItem.Parameters.Processing(1).Resampling.NumberOfWedges = 256;
-SegmentItem.Parameters.Processing(1).Resampling.MinimumRadius = 1;
-SegmentItem.Parameters.Processing(1).Grid.Spacing.X = 16;
-SegmentItem.Parameters.Processing(1).Grid.Spacing.Y = 16;
+SegmentItem.Parameters.Processing(1).Grid.Spacing.X = 32;
+SegmentItem.Parameters.Processing(1).Grid.Spacing.Y = 32;
 SegmentItem.Parameters.Processing(1).Grid.Buffer.Y = [0, 0];
 SegmentItem.Parameters.Processing(1).Grid.Buffer.X = [0, 0];
 SegmentItem.Parameters.Processing(1).InterrogationRegion.Height = 128;
@@ -126,7 +120,6 @@ SegmentItem.Parameters.Processing(1).Smoothing.DoSmoothing = 1;
 SegmentItem.Parameters.Processing(1).Correlation.Method = 'rpc_deform';
 SegmentItem.Parameters.Processing(1).InterrogationRegion.SpatialWindowFraction = [0.50 0.50];
 
-num_passes = SegmentItem.JobOptions.NumberOfPasses;
 
 % Initialize second pass
 SegmentItem.Parameters.Processing(2) = SegmentItem.Parameters.Processing(1);
@@ -134,40 +127,29 @@ SegmentItem.Parameters.Processing(2) = SegmentItem.Parameters.Processing(1);
 % Update region size
 SegmentItem.Parameters.Processing(2).InterrogationRegion.Height = 64;
 SegmentItem.Parameters.Processing(2).InterrogationRegion.Width = 64;
-SegmentItem.Parameters.Processing(2).Grid.Spacing.Y = 8;
-SegmentItem.Parameters.Processing(2).Grid.Spacing.X = 8;
+SegmentItem.Parameters.Processing(2).Grid.Spacing.Y = 16;
+SegmentItem.Parameters.Processing(2).Grid.Spacing.X = 16;
+
+
+% Initialize third pass
+SegmentItem.Parameters.Processing(3) = SegmentItem.Parameters.Processing(1);
+
+% Update region size
+SegmentItem.Parameters.Processing(3).InterrogationRegion.Height = 32;
+SegmentItem.Parameters.Processing(3).InterrogationRegion.Width = 32;
+SegmentItem.Parameters.Processing(3).Grid.Spacing.Y = 8;
+SegmentItem.Parameters.Processing(3).Grid.Spacing.X = 8;
+
+% Number of passes
+num_passes = SegmentItem.JobOptions.NumberOfPasses;
 
 % Repeat the second pass
-for p = 2 : num_passes
-    SegmentItem.Parameters.Processing(p) = SegmentItem.Parameters.Processing(2);
+for p = 3 : num_passes
+    SegmentItem.Parameters.Processing(p) = SegmentItem.Parameters.Processing(3);
 end
 
-% Append segment item.
-for k = 1 : length(c_steps);
-    for p = 1 : num_passes
-        SegmentItem.Parameters.Images.CorrelationStep = c_steps(k);
-    end
-   
-    % Turn off smoothing for the last pass.
-    SegmentItem.Parameters.Processing(end).Smoothing.DoSmoothing = 0;
-    
-   JOBLIST(k) = SegmentItem;
-end
-
-
-% Switch to FMC
-for p = 1 : num_passes
-    SegmentItem.Parameters.Processing(p).Correlation.Method = 'fmc_deform';
-end
-
-% Length of current joblist
-nJobs = length(JOBLIST);
-
-% Append segment item.
-for k = 1 : length(c_steps);
-   SegmentItem.Parameters.Images.CorrelationStep = c_steps(k);
-   JOBLIST(nJobs + k) = SegmentItem;
-end
+% Add to job list
+JOBLIST(1) = SegmentItem;
 
 end
 

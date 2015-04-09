@@ -61,7 +61,7 @@ for n = 1 : nJobs
     % Determine the best fft algoritm to use. 
     fftw('planner', 'patient');
     
-    %% Loop over the sets.
+    % Loop over the sets.
    
     for s = 1 : nSets;
     
@@ -103,7 +103,7 @@ for n = 1 : nJobs
     % String specifying the number format for the images.
     numberFormat = ['%0' num2str(numberOfDigits) '.0f'];
     
-%% Run the job
+% Run the job
 
     % Build a list of image numbers
     firstImageNumbers = startImage : frameStep : endImage;

@@ -104,6 +104,9 @@ while thisPass <= numberOfPasses;
     % Flag to calculate image disparity
     calculateImageDisparity = JobFile.Parameters.Processing(p).DoImageDisparity;
     
+    % Flag for zero-meaning the interrogation regions
+    do_zero_mean = JobFile.Parameters.Processing(p).InterrogationRegion.ZeroMeanRegion;
+    
     % Check deformation flag
     if p > 1 && doImageDeformation
         
@@ -210,7 +213,23 @@ while thisPass <= numberOfPasses;
     isHann1 = ~isempty(regexpi(fmiWindowType, 'hann1'));
     isHann2 = ~isempty(regexpi(fmiWindowType, 'hann2'));
     isGaussianSkew = ~isempty(regexpi(fmiWindowType, 'gauss_skew'));
-
+    
+    % Extract the string specifying the subpixel peak fit method
+    subpixel_peak_fit_method =...
+        JobFile.Parameters.Processing(p).Correlation.PeakFitMethod;
+    
+    % Peak fit method
+    % Convert the subpixel peak-fit method string extracted from the jobfile
+    % into the numerical peak-fit method identifier expected by the function
+    % subpixel.m
+    if ~isempty(regexpi(subpixel_peak_fit_method, 'squ'));
+         subpixel_peak_fit_method_numerical = 3;
+    elseif ~isempty(regexpi(subpixel_peak_fit_method, '3'));
+         subpixel_peak_fit_method_numerical = 1;
+    else
+         subpixel_peak_fit_method_numerical = 1;
+    end
+    
     % Create the FMI Window
     if isHann1
         fmiWindow1D = hann1(numberOfRings, [fmiWindowSize(1) fmiWindowSize(2)], fmiWindowSize(3));
@@ -336,6 +355,17 @@ while thisPass <= numberOfPasses;
     % Diameter of primary spatial peaks
     spatialPeakDiameter = zeros(nRegions, 1);
     
+    % Peak axis lengths
+    DX = zeros(nRegions, 1);
+    DY = zeros(nRegions, 1);
+    
+    % Orientation angle of the best-fit ellipse to the 
+    % spatial correlation peaks
+    peak_angle = zeros(nRegions, 1);
+    
+    % Eccentricity of the spatial peaks
+    peak_eccentricity = zeros(nRegions, 1);
+    
     % Start a timer
     t = tic;
     
@@ -345,6 +375,12 @@ while thisPass <= numberOfPasses;
         % Extract the subregions from the subregion stacks.
         subRegion1 = regionMatrix1(:, :, k);
         subRegion2 = regionMatrix2(:, :, k);
+        
+        % Zero mean the region if requested
+        if do_zero_mean
+            subRegion1 = zero_mean_region(subRegion1);
+            subRegion2 = zero_mean_region(subRegion2);
+        end
                 
         % Perform FMC processing. 
         if isFmc
@@ -363,9 +399,12 @@ while thisPass <= numberOfPasses;
         % The zero in this input means "Do not search multiple peaks,"
         % i.e., use only the primary peak.
         elseif isRpc
-            [estimatedTranslationY(k), estimatedTranslationX(k), rpcPlane, spatialPeakHeight(k), spatialPeakDiameter(k)]...
-                = RPC(spatialWindow .* subRegion1, spatialWindow .* subRegion2,...
-                imageSpectralFilter, COMPILED); 
+            [estimatedTranslationY(k), estimatedTranslationX(k), ...
+                rpcPlane, spatialPeakHeight(k), spatialPeakDiameter(k)]...
+                = RPC(...
+                spatialWindow .* subRegion1, ...
+                spatialWindow .* subRegion2,...
+                imageSpectralFilter, subpixel_peak_fit_method_numerical); 
 
             % Measure the peak height ratio
             if COMPILED
@@ -376,8 +415,14 @@ while thisPass <= numberOfPasses;
 
         % Perform SCC analysis.
         elseif isScc
-            [estimatedTranslationY(k), estimatedTranslationX(k), spatialPeakRatio(k)]...
-                = SCC(spatialWindow .* subRegion1, spatialWindow .* subRegion2);
+            [estimatedTranslationY(k), estimatedTranslationX(k), ...
+                sccPlane, spatialPeakHeight(k),...
+                spatialPeakDiameter(k), DX(k), DY(k), ...
+                peak_angle(k), peak_eccentricity(k)]...
+                = SCC(...
+                spatialWindow .* subRegion1, ...
+                spatialWindow .* subRegion2,...
+                subpixel_peak_fit_method_numerical);
         end
         
         % These lines will calculate the disparity between regions.
@@ -389,6 +434,9 @@ while thisPass <= numberOfPasses;
         
     end % end for k = 1 : nRegions
 
+    % Calculate the peak diameter magnitude
+    peak_diameter = reshape(sqrt(DX.^2 + DY.^2), numRows, numColumns);
+        
     % Inform the user
     disp(['Correlation times (pass ' num2str(p) '): ' num2str(toc(t)) ' sec' ]);
     disp('');

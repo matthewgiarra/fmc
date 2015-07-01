@@ -39,20 +39,22 @@ if r <= 9
     % Shift the plane so the peak is in the center.
     fmi_correlation_plane = fftshift(fmi_correlation_plane, 1);
     % Subpixel peak finding
-    [fy, fmi_peak_shift_x, fmc_peak_heights] = subpixel(fmi_correlation_plane, ones([fmi_height, fmi_width]), 1, multi_peak_flag);
+    [fy, fmi_peak_shift_x, fmc_peak_heights] = subpixel...
+        (fmi_correlation_plane, ones([fmi_height, fmi_width]), 1, multi_peak_flag);
     fmi_peak_shift_y = fy + (fmi_height / 2);
 elseif r >= (fmi_height - 8)
     
     % Shift the plane so the peak is in the center
     fmi_correlation_plane = fftshift(fmi_correlation_plane, 1);
     % Subpixel peak finding
-    [fy, fmi_peak_shift_x, fmc_peak_heights] = subpixel(fmi_correlation_plane, ones([fmi_height, fmi_width]), 1, multi_peak_flag);
+    [fy, fmi_peak_shift_x, fmc_peak_heights] = subpixel...
+        (fmi_correlation_plane, ones([fmi_height, fmi_width]), 1, multi_peak_flag);
     fmi_peak_shift_y = fy + (fmi_height / 2);
 else
     
     % Subpixel peak finding
-    [fmi_peak_shift_y, fmi_peak_shift_x, fmc_peak_heights] = ...
-        subpixel(fmi_correlation_plane, ones([fmi_height, fmi_width]), 1, multi_peak_flag);
+    [fmi_peak_shift_y, fmi_peak_shift_x, fmc_peak_heights] = subpixel...
+        (fmi_correlation_plane, ones([fmi_height, fmi_width]), 1, multi_peak_flag);
 end
 
 % Measure the ratio of the largest to second largest correlation peaks.

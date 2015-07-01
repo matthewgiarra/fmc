@@ -4,13 +4,13 @@ function JOBLIST = fmcJobList_fullField()
 DefaultJob.ImageType = 'synthetic';
 DefaultJob.SetType = 'vortex';
 DefaultJob.CaseName = 'piv_benchmark_vortex_images';
-% DefaultJob.DataRepository = '~/Desktop';
-DefaultJob.DataRepository = ...
-    ['/Volumes/aether/Projects/TurbulentFlame/' ...
-    'analysis/data/Data05/C03/tiff'];
+DefaultJob.DataRepository = '~/Desktop/vortex/raw';
+% DefaultJob.DataRepository = ...
+%     ['/Volumes/aether/Projects/TurbulentFlame/' ...
+%     'analysis/data/Data05/C03/tiff'];
 
 % Job options
-DefaultJob.JobOptions.NumberOfProcessors = 8;
+DefaultJob.JobOptions.NumberOfProcessors = 1;
 DefaultJob.JobOptions.DataRepositoryIsAbsolute = 1;
 DefaultJob.JobOptions.ImageRotationAngle = 0;
 DefaultJob.JobOptions.SimulateBeam = 0;
@@ -24,9 +24,9 @@ DefaultJob.JobOptions.StartPass = 1;
 DefaultJob.JobOptions.RunCompiled = 1;
 
 % Image parameters
-DefaultJob.Parameters.Images.BaseName = 'B';
-DefaultJob.Parameters.Images.Extension = '.tif';
-DefaultJob.Parameters.Images.NumberOfDigits = 5;
+DefaultJob.Parameters.Images.BaseName = 'lambvortex_h1024_w1024_';
+DefaultJob.Parameters.Images.Extension = '.tiff';
+DefaultJob.Parameters.Images.NumberOfDigits = 6;
 DefaultJob.Parameters.Images.CorrelationStep = 1;
 DefaultJob.Parameters.Images.ParticleConcentration = 0.1;
 
@@ -37,7 +37,7 @@ DefaultJob.Parameters.Sets.Skip = 1;
 
 % Stard and end images
 DefaultJob.Parameters.Images.Start = 1;
-DefaultJob.Parameters.Images.End = 10;
+DefaultJob.Parameters.Images.End = 1;
 DefaultJob.Parameters.Images.FrameStep = 1;
 
 % correlation step list
@@ -104,8 +104,8 @@ defaultProcessing = DefaultJob.Parameters.Processing;
 % Job 2, Pass 1
 SegmentItem = DefaultJob;
 SegmentItem.JobOptions.ImageRotationAngle = 0;
-SegmentItem.Parameters.Images.CorrelationStep = 0;
-SegmentItem.JobOptions.NumberOfPasses = 5;
+SegmentItem.Parameters.Images.CorrelationStep = 4;
+SegmentItem.JobOptions.NumberOfPasses = 1;
 
 SegmentItem.JobOptions.StartFromExistingField = 0;
 SegmentItem.JobOptions.StartPass = 1;
@@ -117,17 +117,51 @@ SegmentItem.Parameters.Processing(1).Grid.Spacing.X = 16;
 SegmentItem.Parameters.Processing(1).Grid.Spacing.Y = 16;
 SegmentItem.Parameters.Processing(1).Grid.Buffer.Y = [64, 64];
 SegmentItem.Parameters.Processing(1).Grid.Buffer.X = [64, 64];
-SegmentItem.Parameters.Processing(1).InterrogationRegion.Height = 64;
-SegmentItem.Parameters.Processing(1).InterrogationRegion.Width = 64;
+SegmentItem.Parameters.Processing(1).InterrogationRegion.Height = 128;
+SegmentItem.Parameters.Processing(1).InterrogationRegion.Width = 128;
 SegmentItem.Parameters.Processing(1).DoDiscreteWindowOffset = 0;
 SegmentItem.Parameters.Processing(1).DwoConverge = 0;
 SegmentItem.Parameters.Processing(1).DwoMaxConvergenceIterations = 1;
 SegmentItem.Parameters.Processing(1).DoImageDeformation = 0;
 SegmentItem.Parameters.Processing(1).DoImageDisparity = 0;
-SegmentItem.Parameters.Processing(1).Smoothing.DoSmoothing = 1;
+SegmentItem.Parameters.Processing(1).Smoothing.DoSmoothing = 0;
 SegmentItem.Parameters.Processing(1).Correlation.Method = 'scc';
-SegmentItem.Parameters.Processing(1).InterrogationRegion.SpatialWindowFraction = [0.50 0.50];
+SegmentItem.Parameters.Processing(1). ...
+    InterrogationRegion.SpatialWindowFraction = [0.50 0.50];
 
+% Add to job list
+JOBLIST(1) = SegmentItem;
+
+% Job 2, Pass 1
+SegmentItem = DefaultJob;
+SegmentItem.JobOptions.ImageRotationAngle = 0;
+SegmentItem.Parameters.Images.CorrelationStep = 4;
+SegmentItem.JobOptions.NumberOfPasses = 1;
+
+SegmentItem.JobOptions.StartFromExistingField = 0;
+SegmentItem.JobOptions.StartPass = 1;
+
+% Pass 1
+SegmentItem.Parameters.Processing(1) = defaultProcessing;
+SegmentItem.Parameters.Processing(1).DwoDifferenceMethod = 'central';
+SegmentItem.Parameters.Processing(1).Grid.Spacing.X = 16;
+SegmentItem.Parameters.Processing(1).Grid.Spacing.Y = 16;
+SegmentItem.Parameters.Processing(1).Grid.Buffer.Y = [64, 64];
+SegmentItem.Parameters.Processing(1).Grid.Buffer.X = [64, 64];
+SegmentItem.Parameters.Processing(1).InterrogationRegion.Height = 128;
+SegmentItem.Parameters.Processing(1).InterrogationRegion.Width = 128;
+SegmentItem.Parameters.Processing(1).DoDiscreteWindowOffset = 0;
+SegmentItem.Parameters.Processing(1).DwoConverge = 0;
+SegmentItem.Parameters.Processing(1).DwoMaxConvergenceIterations = 1;
+SegmentItem.Parameters.Processing(1).DoImageDeformation = 0;
+SegmentItem.Parameters.Processing(1).DoImageDisparity = 0;
+SegmentItem.Parameters.Processing(1).Smoothing.DoSmoothing = 0;
+SegmentItem.Parameters.Processing(1).Correlation.Method = 'fmc';
+SegmentItem.Parameters.Processing(1). ...
+    InterrogationRegion.SpatialWindowFraction = [0.50 0.50];
+
+% Add to job list
+JOBLIST(end + 1) = SegmentItem;
 
 % % Initialize second pass
 % SegmentItem.Parameters.Processing(2) = SegmentItem.Parameters.Processing(1);
@@ -156,8 +190,7 @@ SegmentItem.Parameters.Processing(1).InterrogationRegion.SpatialWindowFraction =
 %     SegmentItem.Parameters.Processing(p) = SegmentItem.Parameters.Processing(3);
 % end
 
-% Add to job list
-JOBLIST(1) = SegmentItem;
+
 
 end
 

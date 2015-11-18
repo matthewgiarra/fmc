@@ -48,20 +48,10 @@ if max(GRIDSPACING)==0
     y = (1 : imageHeight)';
     x = 1 : imageWidth;
 else
-    if GRIDBUFFER(1)==0
-        %buffers 1/2 grid spacing
-        y = (ceil((imageHeight-(floor(imageHeight/gridSpacingY)-2)*gridSpacingY)/2):gridSpacingY:(imageHeight-gridSpacingY))';
-    else
-        %predefined grid buffer
-        y = (GRIDBUFFER(1):gridSpacingY:GRIDBUFFER(3))';
-    end
-    if GRIDBUFFER(2)==0
-        %buffers 1/2 grid spacing
-        x = ceil((imageWidth-(floor(imageWidth/gridSpacingX)-2)*gridSpacingX)/2):gridSpacingX:(imageWidth-gridSpacingX);
-    else
-        %predefined grid buffer
-        x = (GRIDBUFFER(2):gridSpacingX:GRIDBUFFER(4));
-    end
+%     Grid the image
+    y = (GRIDBUFFER(1):gridSpacingY:GRIDBUFFER(3))';
+    x = (GRIDBUFFER(2):gridSpacingX:GRIDBUFFER(4));
+
 end
 
 % This is a fast version of REPMAT, 

@@ -17,11 +17,27 @@ numberOfPasses = min(JOBFILE.JobOptions.NumberOfPasses, length(JOBFILE.Parameter
 JOBFILE.Parameters.Processing = JOBFILE.Parameters.Processing(1 : numberOfPasses);
 
 % Read in the clean images.
-image1_raw = double(imread(FILEPATHS.FirstImagePath));
-image2_raw = double(imread(FILEPATHS.SecondImagePath));
+image1_import = double(imread(FILEPATHS.FirstImagePath));
+image2_import = double(imread(FILEPATHS.SecondImagePath));
 
 % Image dimensions
-[imageHeight, imageWidth] = size(image1_raw);
+[imageHeight, imageWidth, num_channels] = size(image1_import);
+
+% Extract the channel
+if num_channels > 1
+    % Make sure the color channel is specified
+    if isfield(JOBFILE.Parameters.Images, 'ColorChannel')
+        % Read the requested color channel
+        channel = JOBFILE.Parameters.Images.ColorChannel;
+        % Extract the color channel from the image.
+        image1_raw = image1_import(:, :, channel);
+        image2_raw = image2_import(:, :, channel);
+    else
+        % Default to taking the first channel if none is specified.
+        image1_raw = image1_import(:, :, 1);
+        image2_raw = image2_import(:, :, 1);
+    end
+end
 
 % Check whether to re-start from a previously existing velocity field.
 startFromExistingField = JOBFILE.JobOptions.StartFromExistingField;
@@ -279,8 +295,8 @@ while thisPass <= numberOfPasses;
     gridSpacingY = JobFile.Parameters.Processing(p).Grid.Spacing.Y;
 
     % Make sure the grid buffer is at least half the size of the interrogation region
-    gridBufferY = max(JobFile.Parameters.Processing(p).Grid.Buffer.Y, ceil(regionHeight / 2));
-    gridBufferX = max(JobFile.Parameters.Processing(p).Grid.Buffer.X, ceil(regionWidth / 2));
+    gridBufferY = JobFile.Parameters.Processing(p).Grid.Buffer.Y;
+    gridBufferX = JobFile.Parameters.Processing(p).Grid.Buffer.X;
 
     % If the pass number is greater than one, i.e., if at least one pass has
     % finished, and also if discrete window offset is enabled,
@@ -429,8 +445,7 @@ while thisPass <= numberOfPasses;
             [DISPARITY_X, DISPARITY_Y] = calculateTransformedRegionDisparity(subRegion1, subRegion2,...
                 estimatedTranslationY(k), estimatedTranslationX(k),...
                 estimatedRotation(k), estimatedScaling(k), xImage, yImage, 0.95, 2, COMPILED);
-        end
-        
+        end       
     end % end for k = 1 : nRegions
 
     % Calculate the peak diameter magnitude
